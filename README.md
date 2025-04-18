@@ -59,6 +59,32 @@ ulong field = flags.ExtractBits(8, 15);
 
 // Insert 0xAB into bits 16–23
 flags.InsertBits(0xAB, 16, 23);
+
+---
+
+enum PlayerFlags
+{
+    CanMove,
+    CanShoot,
+    CanFly,
+    HasShield
+}
+
+// Create a shared template for all players
+var baseFlags = Bitflag.FromEnum<PlayerFlags>();
+baseFlags.SetBits(PlayerFlags.CanMove, PlayerFlags.CanShoot);
+
+// Clone for two players
+var player1 = baseFlags.Clone();
+var player2 = baseFlags.Clone();
+
+// Customize player 2
+player2.SetBits(PlayerFlags.CanFly, PlayerFlags.HasShield);
+
+// player1 remains unchanged
+Console.WriteLine($"Player1: 0x{player1.Value:X}");
+Console.WriteLine($"Player2: 0x{player2.Value:X}");
+
 ```
 
 ---
