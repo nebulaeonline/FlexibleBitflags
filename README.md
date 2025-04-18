@@ -79,6 +79,8 @@ FlexibleBitflags includes a comprehensive xUnit test suite covering:
 
  git clone https://github.com/nebulaeonline/FlexibleBitflags.git
 
+---
+
  ## Why Use This Instead of [Flags]?
 
   - [Flags] enums are verbose, unsafe, and hard to evolve
