@@ -751,26 +751,63 @@ public class Bitflag
         return 63 - BitOperations.LeadingZeroCount(_bitfield);
     }
 
+    /// <summary>
+    /// Performs a bitwise OR operation between two <see cref="Bitflag"/> instances,
+    /// returning a new instance with the combined bitfield values. Named bits and masks are not merged.
+    /// </summary>
+    /// <param name="a">The first <see cref="Bitflag"/> operand.</param>
+    /// <param name="b">The second <see cref="Bitflag"/> operand.</param>
+    /// <returns>A new <see cref="Bitflag"/> whose value is the bitwise OR of <paramref name="a"/> and <paramref name="b"/>.</returns>
     public static Bitflag operator |(Bitflag a, Bitflag b)
     {
         return new Bitflag(a._bitfield | b._bitfield);
     }
 
+    /// <summary>
+    /// Performs a bitwise AND operation between two <see cref="Bitflag"/> instances,
+    /// returning a new instance containing only the bits that are set in both operands.
+    /// Named bits and masks are not merged.
+    /// </summary>
+    /// <param name="a">The first <see cref="Bitflag"/> operand.</param>
+    /// <param name="b">The second <see cref="Bitflag"/> operand.</param>
+    /// <returns>A new <see cref="Bitflag"/> representing the bitwise AND of <paramref name="a"/> and <paramref name="b"/>.</returns>
     public static Bitflag operator &(Bitflag a, Bitflag b)
     {
         return new Bitflag(a._bitfield & b._bitfield);
     }
 
+    /// <summary>
+    /// Performs a bitwise exclusive OR (XOR) operation between two <see cref="Bitflag"/> instances,
+    /// returning a new instance with bits set only where the corresponding bits in the operands differ.
+    /// Named bits and masks are not merged.
+    /// </summary>
+    /// <param name="a">The first <see cref="Bitflag"/> operand.</param>
+    /// <param name="b">The second <see cref="Bitflag"/> operand.</param>
+    /// <returns>A new <see cref="Bitflag"/> representing the bitwise XOR of <paramref name="a"/> and <paramref name="b"/>.</returns>
     public static Bitflag operator ^(Bitflag a, Bitflag b)
     {
         return new Bitflag(a._bitfield ^ b._bitfield);
     }
 
+    /// <summary>
+    /// Performs a bitwise NOT operation on a <see cref="Bitflag"/> instance,
+    /// returning a new instance with all bits inverted.
+    /// Named bits and masks are preserved but not modified or removed.
+    /// </summary>
+    /// <param name="a">The <see cref="Bitflag"/> operand to invert.</param>
+    /// <returns>A new <see cref="Bitflag"/> with all bits flipped from the original.</returns>
     public static Bitflag operator ~(Bitflag a)
     {
         return new Bitflag(~a._bitfield);
     }
 
+    /// <summary>
+    /// Determines whether two <see cref="Bitflag"/> instances are not equal by comparing their bitfield values.
+    /// Named bits and masks are not considered in the comparison.
+    /// </summary>
+    /// <param name="a">The first <see cref="Bitflag"/> to compare.</param>
+    /// <param name="b">The second <see cref="Bitflag"/> to compare.</param>
+    /// <returns><c>true</c> if the bitfield values are different; otherwise, <c>false</c>.</returns>
     public static bool operator ==(Bitflag a, Bitflag b)
     {
         if (ReferenceEquals(a, b)) return true;
@@ -778,21 +815,38 @@ public class Bitflag
         return a._bitfield == b._bitfield;
     }
 
+    /// <summary>
+    /// Determines whether two <see cref="Bitflag"/> instances are not equal by comparing their bitfield values.
+    /// Named bits and masks are not considered in the comparison.
+    /// </summary>
+    /// <param name="a">The first <see cref="Bitflag"/> to compare.</param>
+    /// <param name="b">The second <see cref="Bitflag"/> to compare.</param>
+    /// <returns><c>true</c> if the bitfield values are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(Bitflag a, Bitflag b)
     {
         return !(a == b);
     }
 
+    /// <summary>
+    /// Determines whether the specified object is a <see cref="Bitflag"/> and has the same bitfield value as this instance.
+    /// Named bits and masks are not considered in the comparison.
+    /// </summary>
+    /// <param name="obj">The object to compare with the current <see cref="Bitflag"/>.</param>
+    /// <returns><c>true</c> if the object is a <see cref="Bitflag"/> with the same bitfield value; otherwise, <c>false</c>.</returns>
     public override bool Equals(object? obj)
     {
         return obj is Bitflag other && this == other;
     }
 
+    /// <summary>
+    /// Returns a hash code for the current <see cref="Bitflag"/> instance based on its bitfield value.
+    /// Named bits and masks are not included in the hash computation.
+    /// </summary>
+    /// <returns>An integer hash code representing the current bitfield value.</returns>
     public override int GetHashCode()
     {
         return _bitfield.GetHashCode();
     }
-
 
     public static Bitflag operator |(Bitflag a, ulong mask) => new Bitflag(a._bitfield | mask) { _namedBits = new Dictionary<string, ulong>(a._namedBits) };
 
@@ -997,16 +1051,45 @@ public class Bitflag
         return clone;
     }
 
+    /// <summary>
+    /// Returns a new <see cref="Bitflag"/> with all bits defined by the named mask corresponding to the given enum member cleared.
+    /// The original instance is not modified.
+    /// </summary>
+    /// <typeparam name="TEnum">The enum type used to resolve the named mask.</typeparam>
+    /// <param name="enumValue">An enum member whose name corresponds to a defined mask.</param>
+    /// <returns>
+    /// A new <see cref="Bitflag"/> instance with the specified mask cleared,
+    /// or <c>null</c> if the named mask does not exist.
+    /// </returns>
     public Bitflag? ClearMaskedBitsNew<TEnum>(TEnum enumValue) where TEnum : Enum
     {
         return ClearMaskedBitsNew(enumValue.ToString());
     }
 
+    /// <summary>
+    /// Returns a new <see cref="Bitflag"/> with all bits defined by the named mask corresponding to the given enum member cleared.
+    /// The mask is resolved using the name of the enum member.
+    /// The original instance is not modified.
+    /// </summary>
+    /// <param name="enumValue">An enum member whose name corresponds to a defined mask.</param>
+    /// <returns>
+    /// A new <see cref="Bitflag"/> instance with the specified mask cleared,
+    /// or <c>null</c> if the named mask does not exist.
+    /// </returns>
     public Bitflag? ClearMaskedBitsNew(Enum enumValue)
     {
         return ClearMaskedBitsNew(enumValue.ToString());
     }
 
+    /// <summary>
+    /// Returns a new <see cref="Bitflag"/> with all bits cleared that are defined by the named masks in the provided sequence.
+    /// The original instance is not modified.
+    /// </summary>
+    /// <param name="names">A sequence of mask names to clear from the bitfield.</param>
+    /// <returns>
+    /// A new <see cref="Bitflag"/> instance with the specified masks cleared. 
+    /// Any names that do not match a defined mask are silently ignored.
+    /// </returns>
     public Bitflag ClearMaskedBitsNew(IEnumerable<string> names)
     {
         var clone = this.Clone();
@@ -1018,6 +1101,15 @@ public class Bitflag
         return clone;
     }
 
+    /// <summary>
+    /// Returns a new <see cref="Bitflag"/> with all bits cleared that are defined by the named masks corresponding to the provided enum members.
+    /// Each enum member's name is used to resolve a defined mask. The original instance is not modified.
+    /// </summary>
+    /// <param name="enums">A sequence of enum members whose names correspond to defined masks.</param>
+    /// <returns>
+    /// A new <see cref="Bitflag"/> instance with the specified masks cleared.
+    /// Any enum names that do not match a defined mask are silently ignored.
+    /// </returns>
     public Bitflag ClearMaskedBitsNew(IEnumerable<Enum> enums)
     {
         var clone = this.Clone();
@@ -1030,6 +1122,11 @@ public class Bitflag
         return clone;
     }
 
+    /// <summary>
+    /// Clears all bits in the current bitfield that are defined by the named mask.
+    /// </summary>
+    /// <param name="name">The name of the mask to clear.</param>
+    /// <returns><c>true</c> if the mask was found and applied; otherwise, <c>false</c>.</returns>
     public bool ClearMaskedBits(string name)
     {
         if (!_namedMasks.TryGetValue(name, out var mask))
@@ -1039,16 +1136,32 @@ public class Bitflag
         return true;
     }
 
+    /// <summary>
+    /// Clears all bits in the current bitfield that are defined by the named mask corresponding to the given enum member.
+    /// </summary>
+    /// <typeparam name="TEnum">The enum type used to resolve the mask name.</typeparam>
+    /// <param name="enumValue">The enum member whose name corresponds to a defined mask.</param>
+    /// <returns><c>true</c> if the mask was found and applied; otherwise, <c>false</c>.</returns>
     public bool ClearMaskedBits<TEnum>(TEnum enumValue) where TEnum : Enum
     {
         return ClearMaskedBits(enumValue.ToString());
     }
 
+    /// <summary>
+    /// Clears all bits in the current bitfield that are defined by the named mask corresponding to the given enum member.
+    /// </summary>
+    /// <param name="enumValue">An enum member whose name corresponds to a defined mask.</param>
+    /// <returns><c>true</c> if the mask was found and applied; otherwise, <c>false</c>.</returns>
     public bool ClearMaskedBits(Enum enumValue)
     {
         return ClearMaskedBits(enumValue.ToString());
     }
 
+    /// <summary>
+    /// Clears all bits in the current bitfield that are defined by the named masks in the provided sequence.
+    /// Any mask names that do not match a defined mask are silently ignored.
+    /// </summary>
+    /// <param name="names">A sequence of mask names to clear from the bitfield.</param>
     public void ClearMaskedBits(IEnumerable<string> names)
     {
         foreach (var name in names)
@@ -1058,6 +1171,11 @@ public class Bitflag
         }
     }
 
+    /// <summary>
+    /// Clears all bits in the current bitfield that are defined by the named masks corresponding to the provided enum members.
+    /// Each enum member's name is used to resolve a defined mask. Unmatched enum names are silently ignored.
+    /// </summary>
+    /// <param name="enums">A sequence of enum members whose names correspond to defined masks.</param>
     public void ClearMaskedBits(IEnumerable<Enum> enums)
     {
         foreach (var e in enums)
@@ -1069,10 +1187,14 @@ public class Bitflag
     }
 
     /// <summary>
-    /// Returns a new Bitflag with the specified named mask toggled via XOR.
+    /// Returns a new <see cref="Bitflag"/> with all bits toggled that are defined by the named mask.
+    /// The original instance is not modified.
     /// </summary>
-    /// <param name="name">The name of the mask to toggle</param>
-    /// <returns>A new Bitflag with the mask toggled, or null if not found</returns>
+    /// <param name="name">The name of the mask to toggle.</param>
+    /// <returns>
+    /// A new <see cref="Bitflag"/> with the specified bits toggled,
+    /// or <c>null</c> if the mask name does not exist.
+    /// </returns>
     public Bitflag? ToggleByMaskNew(string name)
     {
         if (!_namedMasks.TryGetValue(name, out var mask))
@@ -1083,16 +1205,41 @@ public class Bitflag
         return clone;
     }
 
+    /// <summary>
+    /// Returns a new <see cref="Bitflag"/> with all bits toggled that are defined by the named mask corresponding to the given enum member.
+    /// The original instance is not modified.
+    /// </summary>
+    /// <typeparam name="TEnum">The enum type used to resolve the mask name.</typeparam>
+    /// <param name="enumValue">The enum member whose name corresponds to a defined mask.</param>
+    /// <returns>
+    /// A new <see cref="Bitflag"/> with the specified bits toggled,
+    /// or <c>null</c> if the mask name does not exist.
+    /// </returns>
     public Bitflag? ToggleByMaskNew<TEnum>(TEnum enumValue) where TEnum : Enum
     {
         return ToggleByMaskNew(enumValue.ToString());
     }
 
+    /// <summary>
+    /// Returns a new <see cref="Bitflag"/> with all bits toggled that are defined by the named mask corresponding to the given enum member.
+    /// The original instance is not modified.
+    /// </summary>
+    /// <param name="enumValue">The enum member whose name corresponds to a defined mask.</param>
+    /// <returns>
+    /// A new <see cref="Bitflag"/> with the specified bits toggled,
+    /// or <c>null</c> if the mask name does not exist.
+    /// </returns>
     public Bitflag? ToggleByMaskNew(Enum enumValue)
     {
         return ToggleByMaskNew(enumValue.ToString());
     }
 
+    /// <summary>
+    /// Returns a new <see cref="Bitflag"/> with all bits toggled that are defined by the named masks in the provided sequence.
+    /// The original instance is not modified. Any names that do not match a defined mask are silently ignored.
+    /// </summary>
+    /// <param name="names">A sequence of mask names to toggle.</param>
+    /// <returns>A new <see cref="Bitflag"/> with the specified bits toggled.</returns>
     public Bitflag ToggleByMaskNew(IEnumerable<string> names)
     {
         var clone = this.Clone();
@@ -1104,6 +1251,12 @@ public class Bitflag
         return clone;
     }
 
+    /// <summary>
+    /// Returns a new <see cref="Bitflag"/> with all bits toggled that are defined by the named masks corresponding to the provided enum members.
+    /// The original instance is not modified. Any enum names that do not match a defined mask are silently ignored.
+    /// </summary>
+    /// <param name="enums">A sequence of enum members whose names correspond to defined masks.</param>
+    /// <returns>A new <see cref="Bitflag"/> with the specified bits toggled.</returns>
     public Bitflag ToggleByMaskNew(IEnumerable<Enum> enums)
     {
         var clone = this.Clone();
@@ -1118,10 +1271,10 @@ public class Bitflag
 
 
     /// <summary>
-    /// Toggles all bits in the given named mask using XOR.
+    /// Toggles all bits in the current bitfield that are defined by the named mask.
     /// </summary>
-    /// <param name="name">The name of the mask to toggle</param>
-    /// <returns>true if the mask was applied, false if the name was not found</returns>
+    /// <param name="name">The name of the mask to toggle.</param>
+    /// <returns><c>true</c> if the mask was found and toggled; otherwise, <c>false</c>.</returns>
     public bool ToggleByMask(string name)
     {
         if (!_namedMasks.TryGetValue(name, out var mask))
@@ -1131,16 +1284,32 @@ public class Bitflag
         return true;
     }
 
+    /// <summary>
+    /// Toggles all bits in the current bitfield that are defined by the named mask corresponding to the given enum member.
+    /// </summary>
+    /// <typeparam name="TEnum">The enum type used to resolve the mask name.</typeparam>
+    /// <param name="enumValue">The enum member whose name corresponds to a defined mask.</param>
+    /// <returns><c>true</c> if the mask was found and toggled; otherwise, <c>false</c>.</returns>
     public bool ToggleByMask<TEnum>(TEnum enumValue) where TEnum : Enum
     {
         return ToggleByMask(enumValue.ToString());
     }
 
+    /// <summary>
+    /// Toggles all bits in the current bitfield that are defined by the named mask corresponding to the given enum member.
+    /// </summary>
+    /// <param name="enumValue">An enum member whose name corresponds to a defined mask.</param>
+    /// <returns><c>true</c> if the mask was found and toggled; otherwise, <c>false</c>.</returns>
     public bool ToggleByMask(Enum enumValue)
     {
         return ToggleByMask(enumValue.ToString());
     }
 
+    /// <summary>
+    /// Toggles all bits in the current bitfield that are defined by the named masks in the provided sequence.
+    /// Any names that do not match a defined mask are silently ignored.
+    /// </summary>
+    /// <param name="names">A sequence of mask names to toggle.</param>
     public void ToggleByMask(IEnumerable<string> names)
     {
         foreach (var name in names)
@@ -1150,6 +1319,11 @@ public class Bitflag
         }
     }
 
+    /// <summary>
+    /// Toggles all bits in the current bitfield that are defined by the named masks corresponding to the provided enum members.
+    /// Each enum member's name is used to resolve a defined mask. Unmatched enum names are silently ignored.
+    /// </summary>
+    /// <param name="enums">A sequence of enum members whose names correspond to defined masks.</param>
     public void ToggleByMask(IEnumerable<Enum> enums)
     {
         foreach (var e in enums)
@@ -1159,7 +1333,6 @@ public class Bitflag
                 _bitfield ^= mask;
         }
     }
-
 
     /// <summary>
     /// Returns the raw masked value (from this bitfield) for the given named mask.
