@@ -2,10 +2,26 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+      <Version>1.0.0</Version>
+      <Copyright>©2025 Nebulae Foundation, LLC</Copyright>
+      <PackageTags>bitfield;bitmask;flags;masking;enum;gamedev;packed;binary;register;toggle;mask;flagutils</PackageTags>
+      <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+      <Description>Flexible and developer-friendly bitfield library with named bits, masks, and binary tools.</Description>
+      <PackageId>FlexibleBitflags</PackageId>
+      <Authors>Robert C. Horvath, III</Authors>
+      <Company>Nebulae Foundation, LLC</Company>
+      <PackageLicenseExpression>MIT</PackageLicenseExpression>
+      <RepositoryUrl>https://github.com/nebulaeonline/FlexibleBitflags</RepositoryUrl>
+      <PackageProjectUrl>https://github.com/nebulaeonline/FlexibleBitflags</PackageProjectUrl>
+      <PackageReadmeFile>README.md</PackageReadmeFile>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>1591</NoWarn>
+    <Title>FlexibleBitflags</Title>
   </PropertyGroup>
 
+    <ItemGroup>
+        <None Include="..\README.md" Pack="true" PackagePath="" />
+    </ItemGroup>
 </Project>
