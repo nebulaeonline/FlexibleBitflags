@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlexibleBitflags", "Flexibl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlexibleBitflagsTests", "FlexibleBitflagsTests\FlexibleBitflagsTests.csproj", "{A4AD9657-E4B9-488B-B1BA-36C264CB1B49}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.csproj", "{958621C3-B277-4BA5-BBD7-07EA5BDFB4FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{A4AD9657-E4B9-488B-B1BA-36C264CB1B49}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4AD9657-E4B9-488B-B1BA-36C264CB1B49}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4AD9657-E4B9-488B-B1BA-36C264CB1B49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{958621C3-B277-4BA5-BBD7-07EA5BDFB4FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{958621C3-B277-4BA5-BBD7-07EA5BDFB4FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{958621C3-B277-4BA5-BBD7-07EA5BDFB4FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{958621C3-B277-4BA5-BBD7-07EA5BDFB4FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

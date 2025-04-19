@@ -82,15 +82,25 @@ public class Bitflag
         if (!enumType.IsEnum)
             throw new ArgumentException("Type must be an enum", nameof(enumType));
 
+        var values = Enum.GetValues(enumType);
         var names = Enum.GetNames(enumType);
 
-        if (names.Length > 64)
+        if (values.Length > 64)
             throw new ArgumentException("Enum has more than 64 values; only 64-bit fields supported.");
 
-        int index = 0;
-        foreach (var name in names)
-            _namedBits[name] = 1UL << index++;
+        for (int i = 0; i < values.Length; i++)
+        {
+            string name = names[i];
+            object valueObj = values.GetValue(i)!;
+            ulong value = Convert.ToUInt64(valueObj);
+
+            if (value > 63)
+                throw new ArgumentException($"Enum value {name} = {value} exceeds 63-bit range.");
+
+            _namedBits[name] = 1UL << (int)value;
+        }
     }
+
 
     // [Tested]
     /// <summary>
@@ -102,19 +112,28 @@ public class Bitflag
     public static Bitflag FromEnum<TEnum>() where TEnum : Enum
     {
         var names = Enum.GetNames(typeof(TEnum));
-
-        Bitflag bitflag = new Bitflag();
+        var values = Enum.GetValues(typeof(TEnum));
 
         if (names.Length > 64)
             throw new ArgumentException("Enum has more than 64 values; only 64-bit fields supported.");
 
-        int i = 0;
+        var bitflag = new Bitflag();
 
-        foreach (var name in names)
-            bitflag.NameBit(name, 1UL << i++);
+        for (int i = 0; i < names.Length; i++)
+        {
+            string name = names[i];
+            object valueObj = values.GetValue(i)!;
+            ulong value = Convert.ToUInt64(valueObj);
+
+            if (value > 63)
+                throw new ArgumentException($"Enum value {name} = {value} exceeds 63-bit range.");
+
+            bitflag._namedBits[name] = 1UL << (int)value;
+        }
 
         return bitflag;
     }
+
 
     // [Tested]
     /// <summary>
@@ -354,6 +373,39 @@ public class Bitflag
     }
 
     /// <summary>
+    /// Sets multiple bits using a sequence of named bit keys.
+    /// </summary>
+    /// <param name="names">An enumerable of bit names to set.</param>
+    /// <exception cref="ArgumentException">If any name is not defined in the bitflag.</exception>
+    public void SetBits(IEnumerable<string> names)
+    {
+        foreach (var name in names)
+        {
+            if (!_namedBits.TryGetValue(name, out var mask))
+                throw new ArgumentException($"Bit name '{name}' is not defined.");
+
+            _bitfield |= mask;
+        }
+    }
+
+    /// <summary>
+    /// Sets multiple bits using a sequence of enum values. Each enum member's name is used to resolve the bit to set.
+    /// </summary>
+    /// <param name="enums">An enumerable of enum values to set.</param>
+    /// <exception cref="ArgumentException">If any name is not defined in the bitflag.</exception>
+    public void SetBits(IEnumerable<Enum> enums)
+    {
+        foreach (var e in enums)
+        {
+            string name = e.ToString();
+            if (!_namedBits.TryGetValue(name, out var mask))
+                throw new ArgumentException($"Bit name '{name}' is not defined.");
+
+            _bitfield |= mask;
+        }
+    }
+
+    /// <summary>
     /// Clears a bit in the bitfield using the index of the bit in the bitfield
     /// </summary>
     /// <param name="bitfieldIndex">The bit index that this name should correspond to</param>
@@ -364,6 +416,19 @@ public class Bitflag
             throw new ArgumentOutOfRangeException(nameof(bitfieldIndex), "Bitfield Index must be between 0 and 63.");
 
         _bitfield &= ~(1UL << bitfieldIndex);
+    }
+
+    /// <summary>
+    /// Clears a single bit using its name.
+    /// </summary>
+    /// <param name="name">The name of the bit to clear.</param>
+    /// <exception cref="ArgumentException">If the name is not defined in the bitflag.</exception>
+    public void ClearBit(string name)
+    {
+        if (!_namedBits.TryGetValue(name, out var mask))
+            throw new ArgumentException($"Bit name '{name}' is not defined.");
+
+        _bitfield &= ~mask;
     }
 
     /// <summary>
@@ -392,14 +457,47 @@ public class Bitflag
     }
 
     /// <summary>
-    /// Clears multiple bits by name
+    /// Clears multiple bits by name.
     /// </summary>
-    /// <param name="names">An array of named bits to clear</param>
-    /// <exception cref="ArgumentException">If any name is not defined</exception>
+    /// <param name="names">An array of named bits to clear.</param>
+    /// <exception cref="ArgumentException">If any name is not defined in the bitflag.</exception>
     public void ClearBits(params string[] names)
     {
         foreach (var name in names)
         {
+            if (!_namedBits.TryGetValue(name, out var mask))
+                throw new ArgumentException($"Bit name '{name}' is not defined.");
+
+            _bitfield &= ~mask;
+        }
+    }
+
+    /// <summary>
+    /// Clears multiple bits using a sequence of named bit keys.
+    /// </summary>
+    /// <param name="names">An enumerable of bit names to clear.</param>
+    /// <exception cref="ArgumentException">If any name is not defined in the bitflag.</exception>
+    public void ClearBits(IEnumerable<string> names)
+    {
+        foreach (var name in names)
+        {
+            if (!_namedBits.TryGetValue(name, out var mask))
+                throw new ArgumentException($"Bit name '{name}' is not defined.");
+
+            _bitfield &= ~mask;
+        }
+    }
+
+    /// <summary>
+    /// Clears multiple bits using a sequence of enum values. Each enum member's name is used to resolve the bit to clear.
+    /// </summary>
+    /// <param name="enums">An enumerable of enum values to clear.</param>
+    /// <exception cref="ArgumentException">If any name is not defined in the bitflag.</exception>
+    public void ClearBits(IEnumerable<Enum> enums)
+    {
+        foreach (var e in enums)
+        {
+            string name = e.ToString();
             if (!_namedBits.TryGetValue(name, out var mask))
                 throw new ArgumentException($"Bit name '{name}' is not defined.");
 
@@ -424,6 +522,21 @@ public class Bitflag
         }
     }
 
+    /// <summary>
+    /// Toggles multiple bits using a sequence of named bit keys.
+    /// </summary>
+    /// <param name="names">An enumerable of bit names to toggle.</param>
+    /// <exception cref="ArgumentException">If any name is not defined in the bitflag.</exception>
+    public void ToggleBits(IEnumerable<string> names)
+{
+    foreach (var name in names)
+    {
+        if (!_namedBits.TryGetValue(name, out var mask))
+            throw new ArgumentException($"Bit name '{name}' is not defined.");
+
+        _bitfield ^= mask;
+    }
+}
     /// <summary>
     /// Toggles a single bit by index
     /// </summary>
@@ -471,6 +584,41 @@ public class Bitflag
     {
         foreach (var name in names)
         {
+            if (!_namedBits.TryGetValue(name, out var mask))
+                throw new ArgumentException($"Bit name '{name}' is not defined.");
+
+            _bitfield ^= mask;
+        }
+    }
+
+    /// <summary>
+    /// Toggles multiple bits using an array of enum values. Each enum member's name is used to resolve the bit to toggle.
+    /// </summary>
+    /// <typeparam name="TEnum">The enum type used for the bit names.</typeparam>
+    /// <param name="enumValues">An array of enum members to toggle.</param>
+    /// <exception cref="ArgumentException">If any name is not defined in the current instance.</exception>
+    public void ToggleBits<TEnum>(params TEnum[] enumValues) where TEnum : Enum
+    {
+        foreach (var e in enumValues)
+        {
+            string name = e.ToString();
+            if (!_namedBits.TryGetValue(name, out var mask))
+                throw new ArgumentException($"Bit name '{name}' is not defined.");
+
+            _bitfield ^= mask;
+        }
+    }
+
+    /// <summary>
+    /// Toggles multiple bits using an array of enum values. Each enum member's name is used to resolve the bit to toggle.
+    /// </summary>
+    /// <param name="enumValues">An array of enum members to toggle.</param>
+    /// <exception cref="ArgumentException">If any name is not defined in the current instance.</exception>
+    public void ToggleBits(params Enum[] enumValues)
+    {
+        foreach (var e in enumValues)
+        {
+            string name = e.ToString();
             if (!_namedBits.TryGetValue(name, out var mask))
                 throw new ArgumentException($"Bit name '{name}' is not defined.");
 
@@ -1389,4 +1537,32 @@ public class Bitflag
         // Clear the target region and insert the masked value
         _bitfield = (_bitfield & ~mask) | maskedValue;
     }
+
+    /// <summary>
+    /// Attempts to retrieve the name associated with a specific bit index (0–63).
+    /// </summary>
+    /// <param name="bitIndex">The bit index to look up.</param>
+    /// <param name="name">The output name if the bit is defined.</param>
+    /// <returns><c>true</c> if a named bit is found at the specified index; otherwise, <c>false</c>.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">If the bit index is not between 0 and 63.</exception>
+    public bool TryGetBitName(int bitIndex, out string name)
+    {
+        if (bitIndex < 0 || bitIndex > 63)
+            throw new ArgumentOutOfRangeException(nameof(bitIndex), "Index must be between 0 and 63.");
+
+        ulong bitmask = 1UL << bitIndex;
+
+        foreach (var kvp in _namedBits)
+        {
+            if (kvp.Value == bitmask)
+            {
+                name = kvp.Key;
+                return true;
+            }
+        }
+
+        name = string.Empty;
+        return false;
+    }
+
 }
