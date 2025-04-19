@@ -1,5 +1,7 @@
 # FlexibleBitflags
 
+[![NuGet](https://img.shields.io/nuget/v/FlexibleBitflags.svg)](https://www.nuget.org/packages/FlexibleBitflags/)
+
 **FlexibleBitflags** is a lightweight C# library that makes bitfield manipulation safe, intuitive, and expressive.  
 It replaces manual bit-twiddling and `[Flags]` boilerplate with clean, name-based access and modern tooling.
 
