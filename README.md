@@ -120,7 +120,11 @@ FlexibleBitflags includes a comprehensive xUnit test suite covering:
 
  ## Installation
 
- git clone https://github.com/nebulaeonline/FlexibleBitflags.git
+$ dotnet add package FlexibleBitflags
+
+     or
+     
+$ git clone https://github.com/nebulaeonline/FlexibleBitflags.git
 
 ---
 
