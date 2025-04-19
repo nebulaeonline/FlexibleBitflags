@@ -198,6 +198,10 @@ Console.WriteLine($"After toggling Visuals: 0x{system.Value:X}");
 ulong fpsOn = system.ExtractBits(1, 1);
 Console.WriteLine($"FPS bit: {fpsOn}");
 
+// Use the regular access pattern
+bool isFpsOn = system["ShowFPS"];
+Console.WriteLine($"FPS bit: {isFpsOn}");
+
 // Insert a value into a defined region (e.g. setting difficulty level 3 in bits 4–7)
 system.InsertBits(3, 4, 7);
 Console.WriteLine($"After inserting difficulty (bits 4–7): 0x{system.Value:X}");
